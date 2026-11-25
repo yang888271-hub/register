@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>분석센터 이용 등록</title>
+<meta name="description" content="건보공단 분석센터 이용 등록">
+<meta name="theme-color" content="#0a2a66">
+<meta name="color-scheme" content="light dark">
+<meta name="format-detection" content="telephone=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="분석센터 등록">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<style>
+/* 연세블루 계열 남색 + 밝은 블루 + 웜그레이, 골드는 점 하나. 시스템 한글 폰트만 사용. */
+:root{color-scheme:light;
+--bg:#eef2f8;--card:#fff;--ink:#0f1b33;--mute:#5d6a80;--line:#dbe2ee;--soft:#f4f7fc;--blue:#1f66c2;--btn:#0a2a66;
+--ok:#0f7a55;--err:#c62839;--openink:#8a5d00;--focusring:rgba(31,102,194,.18);--okbg:#e2f1ea;--openbg:#fcefc9;--bannerbg:#fdf4dc;--bannerline:#f2d58a;
+--navy:#0a2a66;--navy2:#123a85;--gold:#f2b51c;--r:14px;
+--font:"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic","맑은 고딕",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){color-scheme:dark;
+--bg:#0a1020;--card:#121a2c;--ink:#e9eef7;--mute:#93a0b6;--line:#26314a;--soft:#18223a;--blue:#6aa2ec;--btn:#2b5fc0;
+--ok:#4fd1a0;--err:#ff7d8a;--openink:#f2c450;--focusring:rgba(106,162,236,.22);--okbg:#14322c;--openbg:#3a3118;--bannerbg:#2a2616;--bannerline:#6b5717}}
+:root[data-theme=dark]{color-scheme:dark;
+--bg:#0a1020;--card:#121a2c;--ink:#e9eef7;--mute:#93a0b6;--line:#26314a;--soft:#18223a;--blue:#6aa2ec;--btn:#2b5fc0;
+--ok:#4fd1a0;--err:#ff7d8a;--openink:#f2c450;--focusring:rgba(106,162,236,.22);--okbg:#14322c;--openbg:#3a3118;--bannerbg:#2a2616;--bannerline:#6b5717}
+*{box-sizing:border-box;min-width:0}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--font);overflow-x:hidden;word-break:keep-all;overflow-wrap:anywhere;-webkit-tap-highlight-color:transparent}
+.n{font-family:var(--font);font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+button{font:inherit;cursor:pointer}
+.wrap{max-width:460px;margin:0 auto;padding:clamp(20px,4vw,48px) 16px}
+.app{background:var(--card);border-radius:22px;overflow:hidden;box-shadow:0 30px 60px -30px rgba(10,42,102,.45),0 0 0 1px var(--line);min-height:700px;display:flex;flex-direction:column;position:relative}
+.ahead{background:var(--navy);color:#fff;padding:calc(18px + env(safe-area-inset-top)) 22px 20px;position:relative;overflow:hidden}
+.ahead::after{content:"";position:absolute;right:-40px;top:-60px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(106,162,236,.45),transparent 70%)}
+.ahead .lang{position:absolute;right:16px;top:calc(16px + env(safe-area-inset-top));z-index:1;background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700;min-height:36px}
+.ahead small{display:block;font-size:12.5px;opacity:.75;letter-spacing:.01em}
+.ahead h1{margin:2px 0 0;font-size:19px;font-weight:800}
+.ahead .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--gold);margin-left:6px;vertical-align:3px}
+.screen{padding:22px;flex:1;display:flex;flex-direction:column;gap:16px}
+.prog{display:flex;gap:6px}.prog i{flex:1;height:5px;border-radius:9px;background:var(--line)}.prog i.on{background:var(--blue)}
+.stepl{font-size:13px;color:var(--blue);font-weight:700;margin:-6px 0 -8px}
+h2.t{margin:0;font-size:22px;line-height:1.3;font-weight:800}
+.sub{margin:-8px 0 0;color:var(--mute);font-size:15px}
+label{display:block;font-size:14px;font-weight:700;margin-bottom:7px}
+input{width:100%;font:inherit;font-size:17px;padding:13px 15px;border:1.5px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);min-height:52px;transition:border-color .15s;-webkit-appearance:none;appearance:none}
+input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px var(--focusring)}
+input.good{border-color:var(--ok)}input.bad{border-color:var(--err)}
+.hint{font-size:13.5px;color:var(--mute);margin-top:7px;min-height:1.2em}
+.hint.ok{color:var(--ok);font-weight:500}.hint.err{color:var(--err)}
+.chip{display:inline-block;background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:1px 8px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.cta{position:sticky;bottom:0;margin:auto -22px -22px;padding:14px 22px calc(18px + env(safe-area-inset-bottom));background:linear-gradient(to top,var(--card) 75%,rgba(0,0,0,0));display:flex;gap:10px}
+.btn{flex:1;border:0;border-radius:14px;padding:15px;font-weight:800;font-size:17px;min-height:56px;background:var(--btn);color:#fff;transition:transform .1s,opacity .15s}
+.btn:active{transform:scale(.98)}.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn.ghost{flex:0 0 auto;background:var(--soft);color:var(--ink);padding-inline:20px}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.link{background:none;border:0;color:var(--mute);font-size:14px;padding:8px 2px;min-height:40px;white-space:nowrap;text-decoration:underline;text-underline-offset:3px}
+.link.err{color:var(--err)}
+.datebar{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.datebar .d{font-size:15px;color:var(--mute)}.datebar .d b{color:var(--ink);font-size:17px}
+.hello{font-size:21px;font-weight:800;line-height:1.35;margin:0}
+.card{border:1.5px solid var(--line);border-radius:var(--r);padding:16px 16px 12px;background:var(--card);position:relative}
+.card .no{font-weight:800;font-size:19px;letter-spacing:-.01em;font-variant-numeric:tabular-nums;padding-right:118px}
+.card .pi{font-size:14px;color:var(--mute);margin-top:1px}
+.pill{position:absolute;top:14px;right:14px;max-width:112px;text-align:center;line-height:1.35;font-size:12px;font-weight:700;border-radius:999px;padding:3px 10px;background:var(--soft);color:var(--mute)}
+.pill.done{background:var(--okbg);color:var(--ok)}
+.pill.open{background:var(--openbg);color:var(--openink)}
+.card .go{margin-top:12px;width:100%;border:0;border-radius:12px;background:var(--btn);color:#fff;font-weight:800;font-size:16.5px;min-height:52px;display:flex;align-items:center;justify-content:center;gap:8px}
+.card .go.alt{background:var(--soft);color:var(--ink)}
+.card .row{display:flex;justify-content:flex-end;gap:10px;margin-top:4px}
+.add{border:1.5px dashed var(--line);border-radius:var(--r);background:transparent;color:var(--blue);font-weight:700;min-height:54px;width:100%}
+.banner{background:var(--bannerbg);border:1px solid var(--bannerline);border-radius:12px;padding:12px 14px;font-size:14.5px;display:flex;gap:10px;align-items:center;justify-content:space-between}
+.banner button{flex:none;border:0;border-radius:10px;background:var(--navy);color:#fff;font-weight:700;padding:9px 14px;min-height:40px}
+.banner .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.banner.col{display:block}
+.note{background:var(--soft);border-radius:12px;padding:12px 14px;font-size:14px;color:var(--mute);display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.note>span:first-child{flex:1}
+.note .inst{flex:none;border:0;border-radius:10px;background:var(--btn);color:#fff;font-weight:700;padding:8px 12px;min-height:40px;font-size:14px}
+.foot{display:flex;flex-wrap:wrap;gap:2px 16px;border-top:1px solid var(--line);padding-top:8px;margin-top:auto}
+#env:empty{display:none}
+#env{padding:16px 22px 0}
+/* pass */
+.passwrap{background:var(--navy);flex:1;display:flex;flex-direction:column;padding:22px 22px calc(22px + env(safe-area-inset-bottom));gap:16px;color:#fff}
+.pass{background:#fff;color:#0f1b33;border-radius:20px;overflow:hidden;box-shadow:0 20px 40px -20px rgba(0,0,0,.6)}
+.pass .top{background:linear-gradient(110deg,#123a85 0%,#1f66c2 45%,#6aa2ec 50%,#1f66c2 55%,#123a85 100%);background-size:300% 100%;color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;font-weight:700;animation:sheen 3.2s linear infinite}
+.pass .top span{font-size:13px;opacity:.9;font-weight:500}
+@keyframes sheen{from{background-position:100% 0}to{background-position:-200% 0}}
+.pass .body{padding:20px 18px 14px}
+.pass .who{font-size:30px;font-weight:800;line-height:1.1}
+.pass .pj{font-weight:800;font-size:17px;margin-top:6px;font-variant-numeric:tabular-nums}
+.pass .pi2{font-size:14px;color:#5d6a80}
+.pass .tear{border-top:2px dashed #d5dcea;margin:16px -18px 0;position:relative}
+.pass .tear::before,.pass .tear::after{content:"";position:absolute;top:-11px;width:20px;height:20px;border-radius:50%;background:var(--navy)}
+.pass .tear::before{left:-10px}.pass .tear::after{right:-10px}
+.pass .clock{display:flex;justify-content:space-between;align-items:flex-end;padding:14px 18px 18px;gap:10px}
+.pass .clock small{display:block;font-size:12.5px;color:#5d6a80}
+.pass .clock .tm{font-weight:800;font-size:40px;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.pass .clock .tm em{font-style:normal;color:#1f66c2}
+.live{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:#0f7a55}
+.live i{width:8px;height:8px;border-radius:50%;background:#16a36d;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:.25}}
+.passwrap h2{margin:0;font-size:22px;line-height:1.3}
+.flow{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.flow li{display:flex;gap:12px;align-items:center;background:rgba(255,255,255,.08);border-radius:12px;padding:11px 14px;font-size:14.5px}
+.flow li b{flex:none;width:26px;height:26px;border-radius:50%;background:var(--gold);color:#0a2a66;display:grid;place-items:center;font-size:14px}
+.passwrap .btn{background:#fff;color:var(--navy);flex:none}
+.toast{position:absolute;left:50%;top:92px;transform:translate(-50%,20px);opacity:0;background:var(--ink);color:var(--card);padding:10px 16px;border-radius:999px;font-size:14px;transition:.25s;pointer-events:none;max-width:calc(100% - 32px);text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+@media(max-width:520px){.wrap{padding:0}.app{border-radius:0;box-shadow:none;min-height:100vh;min-height:100svh}}
+@media(prefers-reduced-motion:reduce){.pass .top,.live i{animation:none}.toast{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <main class="app" id="app" aria-label="등록 화면">
+    <header class="ahead"><small id="hOrg">건보공단 분석센터</small><h1><span id="hTitle">이용 등록</span><span class="dot" aria-hidden="true"></span></h1>
+      <button class="lang" id="langBtn" type="button" lang="en">English</button></header>
+    <div id="env"></div>
+    <div id="view" style="flex:1;display:flex;flex-direction:column"></div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </main>
+</div>
+<noscript><p style="padding:16px">이 페이지는 JavaScript가 필요해요. Safari나 Chrome에서 열어 주세요.<br>This page needs JavaScript. Please open it in Safari or Chrome.</p></noscript>
+
+<script src="config.js"></script>
+<script src="norm.js"></script>
+<script>
+(function(){
+'use strict';
+var CFG=window.REG_CONFIG, N=window.RegNorm;
+var KEY='nhisReg.v1', LANG_KEY='nhisReg.lang';
+var $=function(id){return document.getElementById(id)};
+var esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
+var mem=null,draft={},clockTimer=null;
+var cur='form',passDay='',wakeLock=null; /* cur: form | home | once | pass | left(폼으로 이동함) */
+var screen=null; /* 지금 화면 {fn,args} — 언어를 바꿀 때 다시 그리기 */
+
+/* ---- 문구 (한국어 / English) ----
+   {0},{1}… 은 값 자리. HTML 태그가 들어간 문구는 그대로 innerHTML로 씀(사용자 값은 esc 후 넣음). */
+var I18N={
+ko:{
+  htmlLang:'ko', title:'분석센터 이용 등록', appLabel:'등록 화면', org:'건보공단 분석센터', heading:'이용 등록', langBtn:'English', langBtnLang:'en',
+  envOnce:'<b>이 브라우저는 정보를 저장할 수 없어요.</b><br>Safari나 Chrome에서 열면 다음부터 버튼 한 번으로 등록돼요. 지금은 1회용으로 입력해 주세요.',
+  envInapp:'<b>앱 안의 브라우저에서 열렸어요.</b><br>저장한 정보가 지워질 수 있어요. Safari나 Chrome에서 열어 주세요.',
+  extOpen:'다른 브라우저로 열기', copyAddr:'주소 복사', copied:'주소를 복사했어요. Safari나 Chrome 주소창에 붙여 넣으세요.', copyFail:'주소창의 주소를 길게 눌러 복사해 주세요.',
+  notReady:'폼 주소 설정 전이라 이동하지 않아요 (config.js)',
+  step1:'1 / 2 · 내 정보', step2:'2 / 2 · 이용할 과제',
+  s1TitleOnce:'등록 정보를 입력해 주세요', s1Title:'처음 한 번만 입력해 주세요', s1SubOnce:'이 브라우저에서는 저장되지 않아요.', s1Sub:'다음부터는 버튼 하나로 등록돼요.',
+  name:'사용자 성명', phone:'사용자 연락처', phoneDef:'숫자만 입력해도 돼요', phoneOk:'저장 형식 {0}',
+  next:'다음', back:'이전', cancel:'취소', save:'저장',
+  proj:'과제번호', projPh:'숫자만 입력 (예: 2025051042)', projDef:'REQ로 시작하는 신청번호가 아닌 NHIS 과제번호', projOk:'이렇게 저장돼요 {0}',
+  pi:'연구책임자(PI) 성명', aff:'연구책임자(PI) 소속', affPh:'예: 예방의학교실',
+  s2Title:'어떤 과제로 이용하세요?', s2SubOnce:'입력한 값이 채워진 폼이 열려요.', s2Sub:'과제가 여러 개면 나중에 추가할 수 있어요.', openForm:'폼 열기', saveStart:'저장하고 시작',
+  saved:'저장했어요', deleted:'삭제했어요',
+  tipIos:'Safari 아래쪽 <b>공유</b> 버튼 → <b>홈 화면에 추가</b>를 누르면', tipOther:'브라우저 메뉴에서 <b>홈 화면에 추가</b>를 누르면', tipTail:' 다음에 바로 열리고, 저장한 정보도 오래 유지돼요.', install:'추가', close:'닫기',
+  today:'오늘', hello:'{0} 님,<br>오늘 이용할 과제를 고르세요.', helloOnce:'{0} 님,',
+  ask:'폼 제출을 마치셨나요?<br>제출했다면 패스를 열어 데스크에 보여 주세요.', openPass:'패스 열기',
+  formNote:'',
+  formNoteConsent:'폼 맨 아래 <b>개인정보 수집·이용 동의</b>에 체크한 뒤 <b>제출</b>을 눌러 주세요. 나머지 항목은 채워져 있어요.',
+  pillDone:'오늘 패스 확인', pillOpen:'제출 확인 필요', pillNone:'오늘 미등록', againPass:'출입 패스 다시 보기', register:'오늘 등록하기 →',
+  edit:'수정', del:'삭제', delArm:'한 번 더 누르면 삭제', addProj:'+ 과제 추가', editMe:'내 정보 수정', direct:'폼에 직접 입력', wipe:'이 기기에서 정보 지우기', wipeArm:'한 번 더 누르면 모두 지워져요',
+  editProj:'과제 정보 수정', newProj:'새 과제 추가', editProjSub:'바뀐 내용만 고치면 돼요.', newProjSub:'다음부터 이 과제도 버튼으로 등록돼요.',
+  passH:'출입 패스', passSub:'이 화면을 데스크에 보여 주세요', passLabel:'출입 패스', passTop:'분석센터 출입 패스', now:'현재 시각', live:'실시간',
+  flow1:'데스크에서 카드키를 받으세요', flow2:'퇴실할 때 카드키를 반납해 주세요', home:'처음 화면으로', restart:'처음부터 다시 입력',
+  err:{req:'REQ로 시작하는 신청번호가 아니라 NHIS 과제번호를 입력하세요.',digits:'숫자 8자리(예: 20241482) 또는 10자리(예: 2025051042)를 입력하세요.',year:'연도 부분을 확인해 주세요.',phone:'휴대폰 번호를 확인해 주세요.'}
+},
+en:{
+  htmlLang:'en', title:'Analysis Center Registration', appLabel:'Registration', org:'NHIS Analysis Center', heading:'Registration', langBtn:'한국어', langBtnLang:'ko',
+  envOnce:'<b>This browser can’t save your information.</b><br>Open this page in Safari or Chrome and next time it’s a single tap. For now, please enter your details once.',
+  envInapp:'<b>You’re in an in-app browser.</b><br>Your saved information may be lost. Please open this page in Safari or Chrome.',
+  extOpen:'Open in another browser', copyAddr:'Copy link', copied:'Link copied. Paste it into the Safari or Chrome address bar.', copyFail:'Press and hold the address bar to copy the link.',
+  notReady:'Form address not set yet, so the form won’t open (config.js)',
+  step1:'1 / 2 · About you', step2:'2 / 2 · Your project',
+  s1TitleOnce:'Enter your details', s1Title:'Enter your details once', s1SubOnce:'This browser won’t save them.', s1Sub:'Next time, registering is a single tap.',
+  name:'Your name', phone:'Your mobile number', phoneDef:'Digits only is fine (e.g. 01012345678)', phoneOk:'Saved as {0}',
+  next:'Next', back:'Back', cancel:'Cancel', save:'Save',
+  proj:'Project number', projPh:'Digits only (e.g. 2025051042)', projDef:'Your NHIS project number — not the application number starting with REQ', projOk:'Saved as {0}',
+  pi:'Principal investigator (PI) name', aff:'PI affiliation', affPh:'e.g. Dept. of Preventive Medicine',
+  s2Title:'Which project are you here for?', s2SubOnce:'The form will open with your answers filled in.', s2Sub:'You can add more projects later.', openForm:'Open the form', saveStart:'Save and continue',
+  saved:'Saved', deleted:'Deleted',
+  tipIos:'In Safari, tap <b>Share</b> → <b>Add to Home Screen</b>', tipOther:'From the browser menu, choose <b>Add to Home screen</b>', tipTail:' to open this page instantly next time and keep your saved info longer.', install:'Add', close:'Close',
+  today:'Today', hello:'Hi {0},<br>choose today’s project.', helloOnce:'Hi {0},',
+  ask:'Have you submitted the form?<br>If so, open your pass and show it at the desk.', openPass:'Open pass',
+  formNote:'The form is in Korean. All 6 answers are filled in for you — scroll down and tap <b>제출</b> (Submit).',
+  formNoteConsent:'The form is in Korean. Your answers are filled in — at the bottom, tick <b>동의합니다</b> (I agree) for the privacy question, then tap <b>제출</b> (Submit).',
+  pillDone:'Done today', pillOpen:'Submitted?', pillNone:'Not yet today', againPass:'Show entry pass again', register:'Register for today →',
+  edit:'Edit', del:'Delete', delArm:'Tap again to delete', addProj:'+ Add a project', editMe:'Edit my info', direct:'Fill in the form myself', wipe:'Erase my info from this device', wipeArm:'Tap again to erase everything',
+  editProj:'Edit project', newProj:'Add a project', editProjSub:'Change only what’s different.', newProjSub:'This project will also be a single tap next time.',
+  passH:'Entry pass', passSub:'Show this screen at the desk · 데스크에 보여 주세요', passLabel:'Entry pass', passTop:'Analysis Center Entry Pass', now:'Current time', live:'Live',
+  flow1:'Get your key card at the desk', flow2:'Return the key card when you leave', home:'Back to start', restart:'Start over',
+  err:{req:'That’s an application number (REQ…). Enter your NHIS project number.',digits:'Enter 8 digits (e.g. 20241482) or 10 digits (e.g. 2025051042).',year:'Please check the year part.',phone:'Please check your mobile number (010…).'}
+}};
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+var LANG=(function(){var s=lsGet(LANG_KEY);if(s==='ko'||s==='en')return s;
+  var l=((navigator.languages&&navigator.languages[0])||navigator.language||'ko').toLowerCase();return l.indexOf('ko')===0?'ko':'en'})();
+function t(k){var s=I18N[LANG][k];if(s==null)s=I18N.ko[k];var a=arguments;return String(s).replace(/\{(\d)\}/g,function(_,i){return a[+i+1]})}
+function errText(code){return code?(I18N[LANG].err[code]||I18N.ko.err[code]||''):''}
+function applyLang(){
+  document.documentElement.lang=t('htmlLang');document.title=t('title');
+  $('app').setAttribute('aria-label',t('appLabel'));$('hOrg').textContent=t('org');$('hTitle').textContent=t('heading');
+  var b=$('langBtn');b.textContent=t('langBtn');b.lang=t('langBtnLang');
+}
+function setLang(l){
+  /* 입력 중인 값 보존 */
+  var keep={};['iName','iPhone','iProj','iPI','iAff'].forEach(function(id){var e=$(id);if(e)keep[id]=e.value});
+  LANG=l;lsSet(LANG_KEY,l);applyLang();envNotice();
+  if(screen)screen.fn.apply(null,screen.args);
+  Object.keys(keep).forEach(function(id){var e=$(id);if(e){e.value=keep[id];e.dispatchEvent(new Event('input',{bubbles:true}))}});
+}
+function show(fn,args){screen={fn:fn,args:args||[]}}
+
+/* ---- 저장소 · 실행 환경 ---- */
+function storageWorks(){try{var k='__nhisReg_t';localStorage.setItem(k,'1');var ok=localStorage.getItem(k)==='1';localStorage.removeItem(k);return ok}catch(e){return false}}
+var STORE=storageWorks();
+var UA=navigator.userAgent||'';
+var KAKAO=/KAKAOTALK/i.test(UA);
+var INAPP=KAKAO||/NAVER\(inapp|Instagram|FBAN|FBAV|FB_IAB|\bLine\/|DaumApps|everytimeApp|BAND\/|; wv\)/i.test(UA);
+var IOS=/iPhone|iPad|iPod/.test(UA)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+var STANDALONE=(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
+var ONCE=!STORE; /* 저장이 안 되는 환경: 1회용 입력 */
+
+function load(){if(!STORE)return mem;try{var v=localStorage.getItem(KEY);return v?JSON.parse(v):null}catch(e){return mem}}
+function save(d){mem=d;if(!STORE)return;try{localStorage.setItem(KEY,JSON.stringify(d))}catch(e){}}
+function wipeAll(){mem=null;try{localStorage.removeItem(KEY)}catch(e){}}
+function toast(s){var el=$('toast');el.textContent=s;el.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(function(){el.classList.remove('on')},2200)}
+
+function envNotice(){
+  if(!ONCE&&!INAPP){$('env').innerHTML='';return}
+  $('env').innerHTML='<div class="banner col" role="note"><div>'+t(ONCE?'envOnce':'envInapp')+'</div><div class="acts">'
+    +(KAKAO?'<button id="extOpen" type="button">'+t('extOpen')+'</button>':'')
+    +'<button id="copyAddr" type="button">'+t('copyAddr')+'</button></div></div>';
+  var eo=$('extOpen');if(eo)eo.onclick=function(){location.href='kakaotalk://web/openExternal?url='+encodeURIComponent(pageUrl())};
+  $('copyAddr').onclick=function(){copyText(pageUrl()).then(function(ok){toast(t(ok?'copied':'copyFail'))})};
+}
+function pageUrl(){return location.href.split('#')[0]}
+function copyText(s){
+  if(navigator.clipboard&&navigator.clipboard.writeText)return navigator.clipboard.writeText(s).then(function(){return true},function(){return legacyCopy(s)});
+  return Promise.resolve(legacyCopy(s));
+}
+function legacyCopy(s){try{var a=document.createElement('textarea');a.value=s;a.setAttribute('readonly','');a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();var ok=document.execCommand('copy');a.remove();return ok}catch(e){return false}}
+
+/* ---- 날짜 ---- */
+function today(){
+  var d=new Date(),tp=N.todayParts(d,CFG.timeZone);
+  if(LANG==='en'){tp.label=new Intl.DateTimeFormat('en-US',{timeZone:CFG.timeZone,weekday:'short',month:'short',day:'numeric'}).format(d)}
+  else{var wd=new Intl.DateTimeFormat('ko-KR',{timeZone:CFG.timeZone,weekday:'short'}).format(d);tp.label=tp.m+'월 '+tp.d+'일 ('+wd+')'}
+  return tp;
+}
+
+/* ---- 폼으로 이동 ---- */
+function go(url){
+  if(!CFG.ready){console.info('[설정 전] 이동할 주소:',url);toast(t('notReady'));return false}
+  cur='left';location.href=url;
+  /* 이동 후에도 이 페이지가 살아 있는 경우(홈 화면 앱이 폼을 위에 겹쳐 여는 등) 대비: 잠시 뒤 안내 화면으로 갱신 */
+  setTimeout(function(){if(cur==='left')route()},1500);
+  return true;
+}
+
+var view=$('view');
+function setHint(inp,hint,r,okKey){inp.classList.toggle('good',!!r.v);inp.classList.toggle('bad',!!r.err);
+  hint.className='hint'+(r.v?' ok':r.err?' err':'');
+  hint.innerHTML=r.v?esc(t(okKey,'\u0000')).replace('\u0000','<span class="chip">'+esc(r.v)+'</span>'):esc(errText(r.err)||hint.dataset.def||'')}
+function stopClock(){clearInterval(clockTimer);clockTimer=null;cur='form';releaseWake()}
+
+/* ---- 화면 꺼짐 방지 (패스 화면에서만, 미지원 브라우저는 무시) ---- */
+function lockScreen(){
+  if(!('wakeLock' in navigator)||wakeLock||document.visibilityState!=='visible')return;
+  navigator.wakeLock.request('screen').then(function(l){
+    if(cur!=='pass'){l.release().catch(function(){});return}
+    wakeLock=l;l.addEventListener('release',function(){if(wakeLock===l)wakeLock=null});
+  }).catch(function(){});
+}
+function releaseWake(){if(wakeLock){var l=wakeLock;wakeLock=null;l.release().catch(function(){})}}
+
+/* 첫 방문 1/2 */
+function setup1(){
+  stopClock();show(setup1);
+  view.innerHTML='<form class="screen" id="f1" novalidate>'
+   +'<div class="prog"><i class="on"></i><i></i></div><div class="stepl">'+t('step1')+'</div>'
+   +'<h2 class="t">'+t(ONCE?'s1TitleOnce':'s1Title')+'</h2><p class="sub">'+t(ONCE?'s1SubOnce':'s1Sub')+'</p>'
+   +'<div><label for="iName">'+t('name')+'</label><input id="iName" autocomplete="name" value="'+esc(draft.name||'')+'"></div>'
+   +'<div><label for="iPhone">'+t('phone')+'</label><input id="iPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="01012345678" value="'+esc(draft.phone||'')+'"><div class="hint" id="hPhone" data-def="'+esc(t('phoneDef'))+'"></div></div>'
+   +'<div class="cta"><button class="btn" id="n1" type="submit" disabled>'+t('next')+'</button></div>'
+   +'</form>';
+  var chk=function(){var r=N.normPhone($('iPhone').value);setHint($('iPhone'),$('hPhone'),r,'phoneOk');$('n1').disabled=!($('iName').value.trim()&&r.v)};
+  $('f1').addEventListener('input',chk);chk();
+  $('f1').addEventListener('submit',function(e){e.preventDefault();if($('n1').disabled)return;draft.name=$('iName').value.trim();draft.phone=N.normPhone($('iPhone').value).v;setup2()});
+}
+function projFields(p){p=p||{};return ''
+  +'<div><label for="iProj">'+t('proj')+'</label><input id="iProj" inputmode="numeric" autocomplete="off" placeholder="'+esc(t('projPh'))+'" value="'+esc(p.no||'')+'"><div class="hint" id="hProj" data-def="'+esc(t('projDef'))+'"></div></div>'
+  +'<div><label for="iPI">'+t('pi')+'</label><input id="iPI" autocomplete="off" value="'+esc(p.pi||'')+'"></div>'
+  +'<div><label for="iAff">'+t('aff')+'</label><input id="iAff" autocomplete="off" placeholder="'+esc(t('affPh'))+'" value="'+esc(p.aff||'')+'"></div>'}
+function projValid(){var r=N.normProj($('iProj').value);setHint($('iProj'),$('hProj'),r,'projOk');return r.v&&$('iPI').value.trim()&&$('iAff').value.trim()?r.v:null}
+function formNote(){var s=t(CFG.consent?'formNoteConsent':'formNote');return s?'<div class="note"><span>'+s+'</span></div>':''}
+/* 첫 방문 2/2 */
+function setup2(){
+  stopClock();show(setup2);
+  view.innerHTML='<form class="screen" id="f2" novalidate>'
+   +'<div class="prog"><i class="on"></i><i class="on"></i></div><div class="stepl">'+t('step2')+'</div>'
+   +'<h2 class="t">'+t('s2Title')+'</h2><p class="sub">'+t(ONCE?'s2SubOnce':'s2Sub')+'</p>'
+   +projFields(draft)
+   +(ONCE?formNote():'')
+   +'<div class="cta"><button class="btn ghost" id="b2" type="button">'+t('back')+'</button><button class="btn" id="n2" type="submit" disabled>'+t(ONCE?'openForm':'saveStart')+'</button></div>'
+   +'</form>';
+  var chk=function(){$('n2').disabled=!projValid()};$('f2').addEventListener('input',chk);chk();
+  $('b2').onclick=function(){draft.no=$('iProj').value;draft.pi=$('iPI').value;draft.aff=$('iAff').value;setup1()};
+  $('f2').addEventListener('submit',function(e){e.preventDefault();var no=projValid();if(!no)return;
+    var u={name:draft.name,phone:draft.phone,projects:[{no:no,pi:$('iPI').value.trim(),aff:$('iAff').value.trim(),opened:'',done:''}],tip:true};
+    save(u);
+    if(ONCE){var td=today(),p0=u.projects[0];p0.opened=td.iso;
+      onceSet({d:td.iso,n:u.name,no:p0.no,pi:p0.pi,aff:p0.aff,l:LANG});
+      if(!go(N.buildUrl(CFG,td,u,p0)))route();return}
+    draft={};home();toast(t('saved'))});
+}
+
+/* 홈 화면 추가 안내 */
+var deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredPrompt=e;var b=$('instBtn');if(b)b.hidden=false});
+function tipHtml(){
+  return '<div class="note"><span>'+t(IOS?'tipIos':'tipOther')+t('tipTail')+'</span>'
+    +'<span style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><button class="inst" id="instBtn" type="button"'+(deferredPrompt?'':' hidden')+'>'+t('install')+'</button><button class="link" id="tipX" type="button">'+t('close')+'</button></span></div>';
+}
+
+/* 홈 */
+function home(){
+  stopClock();
+  var u=load(),td=today();
+  if(!u||!u.projects||!u.projects.length){route();return}
+  cur='home';show(home);
+  var pending=-1;u.projects.forEach(function(p,i){if(pending<0&&p.opened===td.iso&&p.done!==td.iso)pending=i});
+  view.innerHTML='<div class="screen">'
+   +'<div class="datebar"><span class="d">'+t('today')+' <b class="n">'+esc(td.label)+'</b></span></div>'
+   +'<p class="hello">'+t('hello',esc(u.name))+'</p>'
+   +(pending>=0?'<div class="banner"><span>'+t('ask')+'</span><button id="toPass" type="button">'+t('openPass')+'</button></div>':'')
+   +(u.tip&&!STANDALONE&&!INAPP?tipHtml():'')
+   +(pending<0?formNote():'')
+   +u.projects.map(function(p,i){var st=p.done===td.iso?'done':p.opened===td.iso?'open':'';
+      return '<div class="card">'
+        +'<span class="pill '+st+'">'+t(st==='done'?'pillDone':st==='open'?'pillOpen':'pillNone')+'</span>'
+        +'<div class="no">'+esc(p.no)+'</div><div class="pi">'+esc(p.pi)+' · '+esc(p.aff)+'</div>'
+        +'<button class="go'+(st==='done'?' alt':'')+'" data-go="'+i+'" type="button">'+t(st==='done'?'againPass':'register')+'</button>'
+        +'<div class="row"><button class="link" data-edit="'+i+'" type="button">'+t('edit')+'</button><button class="link err" data-del="'+i+'" type="button">'+t('del')+'</button></div>'
+      +'</div>'}).join('')
+   +'<button class="add" id="addP" type="button">'+t('addProj')+'</button>'
+   +'<div class="foot"><button class="link" id="editMe" type="button">'+t('editMe')+'</button><button class="link" id="direct" type="button">'+t('direct')+'</button><button class="link err" id="wipe" type="button">'+t('wipe')+'</button></div>'
+  +'</div>';
+  var tx=$('tipX');if(tx)tx.onclick=function(){u.tip=false;save(u);home()};
+  var ib=$('instBtn');if(ib)ib.onclick=function(){if(!deferredPrompt)return;deferredPrompt.prompt();deferredPrompt.userChoice.then(function(c){deferredPrompt=null;if(c&&c.outcome==='accepted'){u.tip=false;save(u);home()}})};
+  var tp=$('toPass');if(tp)tp.onclick=function(){var p=u.projects[pending];p.done=td.iso;save(u);pass(u,p)};
+  view.querySelectorAll('[data-go]').forEach(function(b){b.onclick=function(){var p=u.projects[+b.dataset.go];
+    if(p.done===td.iso){pass(u,p);return}
+    p.opened=td.iso;save(u);
+    if(!go(N.buildUrl(CFG,td,u,p)))home()}});
+  view.querySelectorAll('[data-edit]').forEach(function(b){b.onclick=function(){projEdit(+b.dataset.edit)}});
+  view.querySelectorAll('[data-del]').forEach(function(b){b.onclick=function(){
+    if(b.dataset.armed){u.projects.splice(+b.dataset.del,1);save(u);toast(t('deleted'));u.projects.length?home():projEdit(-1);return}
+    b.dataset.armed=1;b.textContent=t('delArm');setTimeout(function(){if(b.isConnected){delete b.dataset.armed;b.textContent=t('del')}},3000)}});
+  $('addP').onclick=function(){projEdit(-1)};
+  $('editMe').onclick=meEdit;
+  $('direct').onclick=function(){go(CFG.formUrl)};
+  $('wipe').onclick=function(e){var b=e.currentTarget;if(b.dataset.armed){wipeAll();route();return}b.dataset.armed=1;b.textContent=t('wipeArm')};
+}
+
+function projEdit(idx){
+  stopClock();show(projEdit,[idx]);var u=load(),p=idx>=0?u.projects[idx]:null;
+  view.innerHTML='<form class="screen" id="pf" novalidate>'
+   +'<h2 class="t">'+t(p?'editProj':'newProj')+'</h2><p class="sub">'+t(p?'editProjSub':'newProjSub')+'</p>'
+   +projFields(p)
+   +'<div class="cta">'+(u.projects.length?'<button class="btn ghost" id="pc" type="button">'+t('cancel')+'</button>':'')+'<button class="btn" id="ps" type="submit" disabled>'+t('save')+'</button></div>'
+  +'</form>';
+  var chk=function(){$('ps').disabled=!projValid()};$('pf').addEventListener('input',chk);chk();
+  var c=$('pc');if(c)c.onclick=home;
+  $('pf').addEventListener('submit',function(e){e.preventDefault();var no=projValid();if(!no)return;
+    var np={no:no,pi:$('iPI').value.trim(),aff:$('iAff').value.trim(),opened:p?p.opened||'':'',done:p?p.done||'':''};
+    if(p)u.projects[idx]=np;else u.projects.push(np);save(u);home();toast(t('saved'))});
+}
+function meEdit(){
+  stopClock();show(meEdit);var u=load();
+  view.innerHTML='<form class="screen" id="mf" novalidate>'
+   +'<h2 class="t">'+t('editMe')+'</h2>'
+   +'<div><label for="iName">'+t('name')+'</label><input id="iName" autocomplete="name" value="'+esc(u.name)+'"></div>'
+   +'<div><label for="iPhone">'+t('phone')+'</label><input id="iPhone" type="tel" inputmode="tel" autocomplete="tel" value="'+esc(u.phone)+'"><div class="hint" id="hPhone"></div></div>'
+   +'<div class="cta"><button class="btn ghost" id="mc" type="button">'+t('cancel')+'</button><button class="btn" id="ms" type="submit">'+t('save')+'</button></div></form>';
+  var chk=function(){var r=N.normPhone($('iPhone').value);setHint($('iPhone'),$('hPhone'),r,'phoneOk');$('ms').disabled=!($('iName').value.trim()&&r.v)};
+  $('mf').addEventListener('input',chk);chk();$('mc').onclick=home;
+  $('mf').addEventListener('submit',function(e){e.preventDefault();if($('ms').disabled)return;u.name=$('iName').value.trim();u.phone=N.normPhone($('iPhone').value).v;save(u);home();toast(t('saved'))});
+}
+
+/* 출입 패스 */
+function pass(u,p){
+  var td=today();
+  view.innerHTML='<div class="passwrap">'
+   +'<h2>'+t('passH')+'<br><span style="font-weight:500;font-size:17px;opacity:.85">'+t('passSub')+'</span></h2>'
+   +'<div class="pass" role="group" aria-label="'+esc(t('passLabel'))+'">'
+     +'<div class="top">'+t('passTop')+'<span class="n">'+esc(td.label)+'</span></div>'
+     +'<div class="body">'
+       +'<div class="who">'+esc(u.name)+'</div>'
+       +'<div class="pj">'+esc(p.no)+'</div><div class="pi2">'+esc(p.pi)+' · '+esc(p.aff)+'</div>'
+       +'<div class="tear"></div>'
+     +'</div>'
+     +'<div class="clock"><div><small>'+t('now')+'</small><div class="tm" id="tm">--:--<em>:--</em></div></div><span class="live"><i></i>'+t('live')+'</span></div>'
+   +'</div>'
+   +'<ul class="flow">'
+     +'<li><b>1</b>'+t('flow1')+'</li>'
+     +'<li><b>2</b>'+t('flow2')+'</li>'
+   +'</ul>'
+   +'<button class="btn" id="ph" type="button" style="margin-top:auto">'+t('home')+'</button>'
+  +'</div>';
+  var fmt=new Intl.DateTimeFormat('en-GB',{timeZone:CFG.timeZone,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+  var tick=function(){var el=$('tm');if(!el){stopClock();return}
+    var s=fmt.format(new Date());el.innerHTML=esc(s.slice(0,5))+'<em>'+esc(s.slice(5))+'</em>'};
+  stopClock();cur='pass';passDay=td.iso;show(pass,[u,p]);tick();clockTimer=setInterval(tick,1000);lockScreen();
+  $('ph').onclick=route;
+}
+
+/* ---- 1회용 모드: 저장소 대신 이 페이지 주소의 # 뒤에 패스 정보를 잠깐 둔다 ----
+   # 뒷부분은 서버로 전송되지 않음. 연락처는 담지 않음. 날짜가 지나면 무시하고 지움. */
+var ONCE_PREFIX='#pass=';
+function onceSet(o){try{history.replaceState(null,'',pageUrl()+ONCE_PREFIX+encodeURIComponent(JSON.stringify(o)))}catch(e){}}
+function onceClear(){try{history.replaceState(null,'',pageUrl())}catch(e){}}
+function onceGet(){
+  var h=location.hash;if(h.indexOf(ONCE_PREFIX)!==0)return null;
+  try{var o=JSON.parse(decodeURIComponent(h.slice(ONCE_PREFIX.length)));
+    var ok=o&&['d','n','no','pi','aff'].every(function(k){return typeof o[k]==='string'&&o[k].length<=200});
+    if(!ok||o.d!==today().iso){onceClear();return null}
+    return o}catch(e){onceClear();return null}
+}
+function onceHome(o){
+  stopClock();
+  cur='once';show(onceHome,[o]);
+  var u={name:o.n},p={no:o.no,pi:o.pi,aff:o.aff};
+  view.innerHTML='<div class="screen">'
+   +'<div class="datebar"><span class="d">'+t('today')+' <b class="n">'+esc(today().label)+'</b></span></div>'
+   +'<p class="hello">'+t('helloOnce',esc(o.n))+'</p>'
+   +'<div class="banner"><span>'+t('ask')+'</span><button id="toPass" type="button">'+t('openPass')+'</button></div>'
+   +'<div class="card"><div class="no">'+esc(o.no)+'</div><div class="pi">'+esc(o.pi)+' · '+esc(o.aff)+'</div></div>'
+   +'<div class="foot"><button class="link" id="again" type="button">'+t('restart')+'</button></div>'
+  +'</div>';
+  $('toPass').onclick=function(){pass(u,p)};
+  $('again').onclick=function(){onceClear();draft={name:o.n};setup1()};
+}
+
+function route(){
+  if(ONCE){var o=onceGet();if(o){if((o.l==='ko'||o.l==='en')&&o.l!==LANG){LANG=o.l;applyLang();envNotice()}onceHome(o);return}}
+  var d=load();(d&&d.projects&&d.projects.length)?home():setup1();
+}
+/* 뒤로 가기·홈 화면 아이콘·앱 전환으로 돌아왔을 때 화면을 최신 상태로 */
+function refresh(){
+  if(cur==='home'||cur==='once'||cur==='left')route();          /* 패스 안내·날짜 갱신 */
+  else if(cur==='pass'){if(passDay!==today().iso)route();else lockScreen()} /* 날짜가 바뀌면 패스 닫기 */
+  /* 입력 중인 화면(form)은 건드리지 않음 */
+}
+window.addEventListener('pageshow',function(e){if(e.persisted)refresh()});
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')refresh()});
+$('langBtn').onclick=function(){setLang(LANG==='ko'?'en':'ko')};
+applyLang();
+envNotice();
+route();
+})();
+</script>
+</body>
+</html>
